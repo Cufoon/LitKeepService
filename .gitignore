@@ -1,0 +1,8 @@
+/.idea
+/vendor
+/build
+/prod.yaml
+/dev.yaml
+/testdata
+/tmp
+/build-errors.log
