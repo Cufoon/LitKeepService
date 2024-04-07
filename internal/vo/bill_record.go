@@ -1,9 +1,11 @@
 package vo
 
 import (
+	"time"
+
 	"cufoon.litkeep.service/internal/box"
 	"cufoon.litkeep.service/internal/db/dto"
-	"cufoon.litkeep.service/internal/db/entity"
+	"gorm.io/gorm"
 )
 
 type BillRecordCreateReq struct {
@@ -24,8 +26,21 @@ type BillRecordQueryReq struct {
 	EndTime   *int64 `json:"endTime"`
 }
 
+type BillRecord struct {
+	ID        uint           `json:"id"`
+	UserID    string         `json:"userID"`
+	Type      int            `json:"type"`
+	Kind      string         `json:"kind"`
+	Value     float64        `json:"value"`
+	Time      time.Time      `json:"time"`
+	Mark      string         `json:"mark"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `json:"deletedAt"`
+}
+
 type BillRecordQueryRes struct {
-	Record []entity.BillRecord `json:"record"`
+	Record []*BillRecord `json:"record"`
 }
 
 type BillRecordPageQueryReq struct {
@@ -41,13 +56,13 @@ type BillRecordPageData struct {
 }
 
 type BillRecordPageDataQueryRes struct {
-	Kinds    []*box.BillKind    `json:"kinds"`
+	Kinds    []*BillKind        `json:"kinds"`
 	PageData BillRecordPageData `json:"pageData"`
 }
 
 type BillRecordQueryWithKindRes struct {
-	Kinds  []*box.BillKind     `json:"kinds"`
-	Record []entity.BillRecord `json:"record"`
+	Kinds  []*box.BillKind `json:"kinds"`
+	Record []*BillRecord   `json:"record"`
 }
 
 type BillRecordModifyReq struct {

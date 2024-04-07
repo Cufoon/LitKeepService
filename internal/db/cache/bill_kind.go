@@ -49,10 +49,11 @@ func (sbc *SystemBillKindCache) JoinSystemBillKind(kinds []entity.BillKind) []en
 	result := make([]entity.BillKind, 0)
 	var isOveredMap = make(map[string]bool)
 	var isDeletedMap = make(map[string]bool)
-	for _, kind := range kinds {
+	for idx, kind := range kinds {
 		if kind.OverKind != "" {
-			if _, ok := sbc.cache[kind.OverKind]; ok {
+			if ovk, ok := sbc.cache[kind.OverKind]; ok {
 				isOveredMap[kind.OverKind] = true
+				kinds[idx].UpKind = ovk.UpKind
 				if (kind.DeletedAt != gorm.DeletedAt{}) {
 					isDeletedMap[kind.KindID] = true
 				}

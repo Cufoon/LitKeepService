@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 
 	"cufoon.litkeep.service/internal/box"
@@ -24,6 +26,12 @@ func (brh *BillRecordHandler) Create(c *fiber.Ctx) error {
 	data := new(vo.BillRecordCreateReq)
 	err := c.BodyParser(data)
 	if err != nil || data.Time == nil || data.Value == nil || data.Type == nil || validator.BadBillRecordType(data.Type) {
+		fmt.Println(err.Error())
+		fmt.Println("err != nil", err != nil)
+		fmt.Println("data.Time == nil", data.Time == nil)
+		fmt.Println("data.Value == nil", data.Value == nil)
+		fmt.Println("data.Type == nil", data.Type == nil)
+		fmt.Println("validator.BadBillRecordType(data.Type)", validator.BadBillRecordType(data.Type))
 		return util.ResBadBody(c)
 	}
 
@@ -58,7 +66,22 @@ func (brh *BillRecordHandler) Query(c *fiber.Ctx) error {
 	if err != nil {
 		return util.ResFail(c, 1, err.Error())
 	}
-	return util.ResOK(c, &vo.BillRecordQueryRes{Record: record})
+	record2 := make([]*vo.BillRecord, len(record))
+	for idx, item := range record {
+		record2[idx] = &vo.BillRecord{
+			ID:        item.ID,
+			UserID:    item.UserID,
+			Type:      item.Type,
+			Kind:      item.Kind,
+			Value:     item.Value,
+			Time:      item.Time,
+			Mark:      item.Mark,
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+			DeletedAt: item.DeletedAt,
+		}
+	}
+	return util.ResOK(c, &vo.BillRecordQueryRes{Record: record2})
 }
 
 func (brh *BillRecordHandler) QueryPage(c *fiber.Ctx) error {
@@ -75,7 +98,22 @@ func (brh *BillRecordHandler) QueryPage(c *fiber.Ctx) error {
 	if err != nil {
 		return util.ResFail(c, 1, err.Error())
 	}
-	return util.ResOK(c, &vo.BillRecordPageQueryRes{Record: record})
+	record2 := make([]*vo.BillRecord, len(record))
+	for idx, item := range record {
+		record2[idx] = &vo.BillRecord{
+			ID:        item.ID,
+			UserID:    item.UserID,
+			Type:      item.Type,
+			Kind:      item.Kind,
+			Value:     item.Value,
+			Time:      item.Time,
+			Mark:      item.Mark,
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+			DeletedAt: item.DeletedAt,
+		}
+	}
+	return util.ResOK(c, &vo.BillRecordPageQueryRes{Record: record2})
 }
 
 func (brh *BillRecordHandler) QueryPageData(c *fiber.Ctx) error {
@@ -88,8 +126,16 @@ func (brh *BillRecordHandler) QueryPageData(c *fiber.Ctx) error {
 	if err != nil {
 		return util.ResFail(c, 1, err.Error())
 	}
+	kinds2 := make([]*vo.BillKind, len(kinds))
+	for idx, item := range kinds {
+		kinds2[idx] = &vo.BillKind{
+			KindID:      item.KindID,
+			Name:        item.Name,
+			Description: item.Description,
+		}
+	}
 	return util.ResOK(c, &vo.BillRecordPageDataQueryRes{
-		Kinds: kinds,
+		Kinds: kinds2,
 		PageData: vo.BillRecordPageData{
 			Total:      count,
 			TotalPages: (count-1)/20 + 1,
@@ -117,7 +163,22 @@ func (brh *BillRecordHandler) QueryWithKind(c *fiber.Ctx) error {
 	if err != nil {
 		return util.ResFail(c, 1, err.Error())
 	}
-	return util.ResOK(c, &vo.BillRecordQueryWithKindRes{Kinds: kinds, Record: record})
+	record2 := make([]*vo.BillRecord, len(record))
+	for idx, item := range record {
+		record2[idx] = &vo.BillRecord{
+			ID:        item.ID,
+			UserID:    item.UserID,
+			Type:      item.Type,
+			Kind:      item.Kind,
+			Value:     item.Value,
+			Time:      item.Time,
+			Mark:      item.Mark,
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+			DeletedAt: item.DeletedAt,
+		}
+	}
+	return util.ResOK(c, &vo.BillRecordQueryWithKindRes{Kinds: kinds, Record: record2})
 }
 
 func (brh *BillRecordHandler) Modify(c *fiber.Ctx) error {

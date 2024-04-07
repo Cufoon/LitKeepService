@@ -18,7 +18,7 @@ type BillKindCreateRes struct {
 
 type BillKindQueryTreeResData struct {
 	BillKind
-	Children []BillKind
+	Children []BillKind `json:"children"`
 }
 
 type BillKindQueryTreeRes struct {
