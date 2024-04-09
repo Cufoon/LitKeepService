@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"math"
 
 	"cufoon.litkeep.service/internal/box"
@@ -21,7 +22,7 @@ type BillRecordService struct {
 
 func (brs *BillRecordService) Create(record *box.BillRecord) error {
 	if record.KindID != "" {
-		if !brs.billKindDAO.ExistByUserIDAndKindID(record.UserID, record.KindID) {
+		if !brs.billKindDAO.ExistByUserIDAndKindIDWithSystem(record.UserID, record.KindID) {
 			return constant.ErrBillKindNotExist
 		}
 	}
@@ -62,14 +63,20 @@ func (brs *BillRecordService) QueryPage(query *box.BillRecordPageQuery) ([]entit
 	return result, nil
 }
 
-func (brs *BillRecordService) QueryStatisticsDay(userID string, query *box.BillRecordStatisticsDayQueryReq) ([]dto.QueryStatisticsDayData, error) {
-	oResult := brs.dao.QueryStatisticsDay(userID, *query.StartTime, *query.EndTime)
+func (brs *BillRecordService) QueryStatisticsDay(userID string, recordType int, query *box.BillRecordStatisticsDayQueryReq) ([]dto.QueryStatisticsDayData, error) {
+	var oResult []dto.QueryStatisticsDayData
+	if recordType == 0 {
+		oResult = brs.dao.QueryStatisticsDayIncome(userID, *query.StartTime, *query.EndTime)
+	} else {
+		oResult = brs.dao.QueryStatisticsDayExpenditure(userID, *query.StartTime, *query.EndTime)
+	}
 	diff := query.EndTime.Sub(*query.StartTime)
 	diffDays := int64(math.Floor(diff.Abs().Hours() / 24))
 	dateList := make([]string, 0, diffDays)
-	for d := query.StartTime.AddDate(0, 0, 1); !d.After(*query.EndTime); d = d.AddDate(0, 0, 1) {
+	for d := query.StartTime.Add(0); !d.After(*query.EndTime); d = d.AddDate(0, 0, 1) {
 		dateList = append(dateList, d.Format("2006-01-02"))
 	}
+	fmt.Println("ccvbfhsbnvf", dateList)
 	result := make([]dto.QueryStatisticsDayData, 0, diffDays)
 	idx1 := 0
 	idx2 := 0
@@ -82,6 +89,10 @@ func (brs *BillRecordService) QueryStatisticsDay(userID string, query *box.BillR
 			result = append(result, dto.QueryStatisticsDayData{Day: dateList[idx1], Money: 0})
 			idx1++
 		}
+	}
+	for idx1 < len(dateList) {
+		result = append(result, dto.QueryStatisticsDayData{Day: dateList[idx1], Money: 0})
+		idx1++
 	}
 	return result, nil
 }

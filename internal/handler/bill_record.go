@@ -26,7 +26,6 @@ func (brh *BillRecordHandler) Create(c *fiber.Ctx) error {
 	data := new(vo.BillRecordCreateReq)
 	err := c.BodyParser(data)
 	if err != nil || data.Time == nil || data.Value == nil || data.Type == nil || validator.BadBillRecordType(data.Type) {
-		fmt.Println(err.Error())
 		fmt.Println("err != nil", err != nil)
 		fmt.Println("data.Time == nil", data.Time == nil)
 		fmt.Println("data.Value == nil", data.Value == nil)
@@ -221,7 +220,11 @@ func (brh *BillRecordHandler) QueryStatisticsDay(c *fiber.Ctx) error {
 		return util.ResBadBody(c)
 	}
 	userID := flow.GetUserID(c)
-	result, err := brh.billRecordService.QueryStatisticsDay(userID, &box.BillRecordStatisticsDayQueryReq{
+	queryType := 1
+	if data.RecordType != nil {
+		queryType = *data.RecordType
+	}
+	result, err := brh.billRecordService.QueryStatisticsDay(userID, queryType, &box.BillRecordStatisticsDayQueryReq{
 		StartTime: util.Timestamp2Time(data.StartTime),
 		EndTime:   util.Timestamp2Time(data.EndTime),
 	})

@@ -1,7 +1,7 @@
 package validator
 
 func BadBillRecordType(v *int) bool {
-	if *v != 1 && *v != 2 {
+	if *v != 0 && *v != 1 && *v != 2 {
 		return true
 	}
 	return false

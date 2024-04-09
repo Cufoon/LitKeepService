@@ -87,8 +87,9 @@ type BillRecordDeleteRes struct {
 }
 
 type BillRecordStatisticsDayQueryReq struct {
-	StartTime *int64 `json:"startTime"`
-	EndTime   *int64 `json:"endTime"`
+	StartTime  *int64 `json:"startTime"`
+	EndTime    *int64 `json:"endTime"`
+	RecordType *int   `json:"type"`
 }
 
 type BillRecordStatisticsDayQueryRes struct {

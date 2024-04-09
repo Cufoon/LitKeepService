@@ -100,10 +100,20 @@ func (br *BillRecordDAO) Modify(billRecord *box.BillRecord) error {
 	}).Error
 }
 
-func (br *BillRecordDAO) QueryStatisticsDay(userID string, start, end time.Time) []dto.QueryStatisticsDayData {
+func (br *BillRecordDAO) QueryStatisticsDayExpenditure(userID string, start, end time.Time) []dto.QueryStatisticsDayData {
 	var result []dto.QueryStatisticsDayData
 	br.model().
-		Select("date_format(time, '%Y-%m-%d') day,sum(if(type = 1, -1 * value, value)) total").
+		Select("date_format(time, '%Y-%m-%d') day,sum(if(type = 1, -1 * value, 0)) total").
+		Where("id_user = ? AND (time BETWEEN ? AND ?)", userID, start, end).
+		Group("date_format(time, '%Y-%m-%d')").Order("day").
+		Find(&result)
+	return result
+}
+
+func (br *BillRecordDAO) QueryStatisticsDayIncome(userID string, start, end time.Time) []dto.QueryStatisticsDayData {
+	var result []dto.QueryStatisticsDayData
+	br.model().
+		Select("date_format(time, '%Y-%m-%d') day,sum(if(type = 0, value, 0)) total").
 		Where("id_user = ? AND (time BETWEEN ? AND ?)", userID, start, end).
 		Group("date_format(time, '%Y-%m-%d')").Order("day").
 		Find(&result)

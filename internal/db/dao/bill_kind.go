@@ -43,6 +43,12 @@ func (bk *BillKindDAO) ExistByUserIDAndKindID(userID string, kindID string) bool
 	return r.Error == nil
 }
 
+func (bk *BillKindDAO) ExistByUserIDAndKindIDWithSystem(userID string, kindID string) bool {
+	record := new(entity.BillKind)
+	r := bk.model().Where("id_kind", kindID).Where("id_user = ? or id_user = ?", userID, "LitAdmin").Order("name asc").First(record)
+	return r.Error == nil
+}
+
 func (bk *BillKindDAO) QueryByKindID(kindID string) (*entity.BillKind, error) {
 	record := new(entity.BillKind)
 	r := bk.model().Where("id_kind", kindID).Order("name asc").First(record)
@@ -57,7 +63,8 @@ func (bk *BillKindDAO) QueryByUserID(userID string) ([]entity.BillKind, error) {
 
 func (bk *BillKindDAO) QueryByUserIDWithDeletedOver(userID string) ([]entity.BillKind, error) {
 	var records []entity.BillKind
-	r := bk.model().Raw("select * from bill_kind where id_user = ? and (deleted_at is not null or id_overkind is not null or id_overkind !='');", userID).Find(&records)
+	// r := bk.model().Raw("select * from bill_kind where id_user = ? and (deleted_at is not null or id_overkind is not null or id_overkind !='');", userID).Find(&records)
+	r := bk.model().Unscoped().Where("id_user = ? and (id_overkind is not null or id_overkind !='')", userID).Find(&records)
 	return records, r.Error
 }
 
